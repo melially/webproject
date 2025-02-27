@@ -21,25 +21,57 @@ class HTMLNode:
     def __repr__(self):
         return f"Tag: {self.tag}, Value: {self.value}, Children: {self.children}, Props: {self.props}"
 
-"""
-    Add a to_html(self) method. For now, it should just raise a NotImplementedError. 
-        Child classes will override this method to render themselves as HTML.
-    Add a props_to_html(self) method. 
-        It should return a string that represents the HTML attributes of the node. 
-        For example, if self.props is:
+class LeafNode(HTMLNode):
+    def __init__(self, tag, value, props=None, children=None):
+        super().__init__(tag=tag, value=value, children=None, props=props)
+        # Use super().__init__ to call the parent constructor with our modified parameters
 
-{
-    "href": "https://www.google.com",
-    "target": "_blank",
-}
+    def to_html(self):
+        if self.value is None: # Check if value is None
+            raise ValueError("LeafNode missing a value")
 
-Then self.props_to_html() should return:
+        if self.tag is None:
+            return self.value
+        
+        html = f"<{self.tag}" # Start with the opening tag
+    
+        if self.props: # Add props if there are any
+            for prop, value in self.props.items():
+                html += f' {prop}="{value}"'
+    
+        # Close the opening tag and add the value and closing tag
+        html += f">{self.value}</{self.tag}>"
+        return html
 
- href="https://www.google.com" target="_blank"
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag=tag, children=children, props=props)
 
-Notice the leading space character before href and before target. This is important. HTML attributes are always separated by spaces.
-    Add a __repr__(self) method. Give yourself a way to print an HTMLNode object and see its tag, value, children, and props. This will be useful for your debugging.
-    Create some tests for the HTMLNode class (at least 3). I used a new file called src/test_htmlnode.py. Create a few nodes and make sure the props_to_html method works as expected.
-    When you're satisfied that your class is behaving as expected and your unit tests are running successfully, run and submit the tests.
-
-"""
+    def to_html(self):
+        if self.tag is None: # Check if value is None
+            raise ValueError("ParentNode missing a tag")
+        if self.children is None: # Check if value is None
+            raise ValueError("ParentNode missing children")
+        
+        if self.props: # Create opening tag with properties
+            props_str = ""
+            for prop, value in self.props.items():
+                props_str += f' {prop}="{value}"'
+            html = f"<{self.tag}{props_str}>"
+        else:
+            html = f"<{self.tag}>"
+    
+        for child in self.children: # Recursively add HTML from all children
+            html += child.to_html()
+    
+        html += f"</{self.tag}>" # Add closing tag
+        
+        return html   
+'''
+Otherwise, return a string representing the HTML tag of the 
+    node and its children. This should be a recursive method 
+    (each recursion being called on a nested child node). 
+    I iterated over all the children and called to_html on each, 
+    concatenating the results and injecting them between the 
+    opening and closing tags of the parent.
+'''
