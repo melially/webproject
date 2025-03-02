@@ -1,3 +1,4 @@
+from textnode import TextNode, TextType
 
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
@@ -75,3 +76,22 @@ Otherwise, return a string representing the HTML tag of the
     concatenating the results and injecting them between the 
     opening and closing tags of the parent.
 '''
+def text_node_to_html_node(text_node):
+    # You'll check text_node.text_type here
+    if text_node.text_type == TextType.NORMAL_TEXT:
+        return LeafNode(None, text_node.text)
+    # For each type, return the appropriate LeafNode
+    elif text_node.text_type == TextType.BOLD_TEXT:
+        return LeafNode("b", text_node.text)
+    # For example, for TextType.BOLD, you'd return a LeafNode with tag "b"
+    elif text_node.text_type == TextType.ITALIC_TEXT:
+        return LeafNode("i", text_node.text)
+    elif text_node.text_type == TextType.CODE_TEXT:
+        return LeafNode("code", text_node.text)
+    elif text_node.text_type == TextType.LINK_TEXT:
+        return LeafNode("a", text_node.text, {"href": text_node.url})
+    elif text_node.text_type == TextType.IMAGE_TEXT:  
+        return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
+    # Don't forget to handle the case where the type isn't recognized
+    else:
+        raise ValueError(f"Invalid TextType: {text_node.text_type}")

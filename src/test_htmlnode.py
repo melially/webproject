@@ -1,6 +1,7 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode, ParentNode
+from textnode import TextNode, TextType
+from htmlnode import HTMLNode, LeafNode, ParentNode, text_node_to_html_node
 
 class TestHTMLNode(unittest.TestCase):
     def test_htmlnode(self):
@@ -88,5 +89,12 @@ class TestHTMLNode(unittest.TestCase):
         )
     # Should have more tests for parentnode
 
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.NORMAL_TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+    # Should have more tests for text to html conversion
+    
 if __name__ == "__main__":
     unittest.main()
